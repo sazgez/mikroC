@@ -1,6 +1,6 @@
 /*
    Variance islemi
-   birden fazla deger bu degerler arasinda degisim gösterir.
+   birden fazla deger bu degerler arasinda degisim gÃ¶sterir.
    hata orani = 0.4;
    degerler = {2, 2.3, 2.1, 1.9, 2.1, 2}
    degerler = {2, 3.4, 5, 2.3, 1.2, 0.8}
@@ -16,7 +16,7 @@ sbit LCD_D6 at RB4_bit;
 sbit LCD_D5 at RB3_bit;
 sbit LCD_D4 at RB2_bit;
 
-// Pin yönlendirme
+// Pin yÃ¶nlendirme
 sbit LCD_RS_Direction at TRISB0_bit;
 sbit LCD_EN_Direction at TRISB1_bit;
 sbit LCD_D7_Direction at TRISB5_bit;

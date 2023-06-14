@@ -6,7 +6,7 @@ sbit LCD_D6 at RB4_bit;
 sbit LCD_D5 at RB3_bit;
 sbit LCD_D4 at RB2_bit;
 
-// Pin yönlendirme
+// Pin yï¿½nlendirme
 sbit LCD_RS_Direction at TRISB0_bit;
 sbit LCD_EN_Direction at TRISB1_bit;
 sbit LCD_D7_Direction at TRISB5_bit;
@@ -36,13 +36,13 @@ void interrupt() {
     INTCON.TMR0IF = 0;
     TMR0 = 99;
     // several operations can be executed in 10 ms
-    counter_1s++; // increases every 1 ms
-    if(counter_1s == 100) // every 1 second
+    counter_1s++; // increases every 10 ms
+    if(counter_1s == 100) // every 1 second (10 ms * 100 = 1000 ms => 1 s)
     {
      PORTB = ~PORTB;
      counter_1s = 0;
     }
-    counter_2s++; // increases every 1 ms
+    counter_2s++; // increases every 10 ms
     if(counter_2s == 200) // every 2 seconds
     {
      PORTC = ~PORTC;

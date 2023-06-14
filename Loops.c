@@ -1,8 +1,8 @@
 void main() {
   short i;
   int dizi [4] = {4,5,6,8};
-  trisb = 0; // PORTB output oldu
-  portb = 0; // PORTB'ye 0 Volt gitti
+  trisb = 0; // PORTB output
+  portb = 0; // PORTB has acquired 0 Volt
   
   if(portd.B0 == 1)
   {

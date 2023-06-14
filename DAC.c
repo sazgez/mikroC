@@ -14,7 +14,7 @@ sbit LCD_D6_Direction at TRISB6_bit;
 sbit LCD_D5_Direction at TRISB5_bit;
 sbit LCD_D4_Direction at TRISB4_bit;
 
-void PWM_ayar() // PWM1 ayari
+void PWM_ayar() // set PWM1
 {
  TRISC.B2 = 0; // PWM 1
  PR2 = 124;
@@ -47,9 +47,9 @@ void main() {
    ByteToStr(duty_degeri, duty_degeri_txt);
    LCD_OUT(1, 3, duty_degeri_txt);
 
-  if(PORTB.B0 == 0) // anahtara basildigi zaman
+  if(PORTB.B0 == 0) // when button has been pressed
   {
-   if(duty_degeri < 256) // Register max degeri 255
+   if(duty_degeri < 256) // Register max value 255
    {
      duty_degeri++;
      PWM1_Set_Duty(duty_degeri);
@@ -58,9 +58,9 @@ void main() {
    }
   }
 
-  if(PORTB.B1 == 0) // anahtara basildigi zaman
+  if(PORTB.B1 == 0) // when button has been pressed
   {
-   if(duty_degeri >= 0) // Register min degeri 0
+   if(duty_degeri >= 0) // Register min value 0
    {
      duty_degeri--;
      PWM1_Set_Duty(duty_degeri);
