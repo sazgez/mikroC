@@ -1,8 +1,10 @@
 /* 
-   Problem: According to the analog input to be entered from the RA0, the LCD is 
-            going to display its increment or decrement that have been acquired from 
-            the RA1, regarding to the first value. The change will be calculated & 
-            displayed every second.
+   Problem: According to the analog inputs to be read from the RA0 and RA1, the LCD is
+            going to display them. After that some operations will be performed, and finally
+            the result will also displayed on LCD & sent as an analog output.
+            The operation will take place every second for the simultaniousness.
+            The PWM has to produce 2 KHz frequency and the MCU has to work by
+            8 MHz.
 */
 
 // Lcd pinout settings
@@ -22,8 +24,8 @@ sbit LCD_D5_Direction at TRISB1_bit;
 sbit LCD_D4_Direction at TRISB0_bit;
 
 int counter = 0;
-float initial_value, current_value, difference;
-char difference_txt [10];
+float adc_value1, adc_value2, temperature, damp, result;
+char temperature_txt [10], damp_txt [10], result_txt [10];
 
 void setTimer0() // configuration is for 10 ms
 {
@@ -48,22 +50,25 @@ void interrupt()
   counter++;
   if(counter == 100) // every 1 second (10 ms * 100 = 1000 ms => 1 s)
   {
-   current_value = ADC_Read(1); // get the input from second pinout
-   difference = (float) current_value - initial_value; // calculate the difference
-   FloatToStr(difference, difference_txt); // conversion
-   if(current_value > initial_value) // increment happened
-   {
-    LCD_OUT(1, 2, "+ ");
-    LCD_OUT(1, 3, difference_txt);
-   }
-   else if(current_value == initial_value) // no difference
-   {
-    LCD_OUT(1, 2, "Same");
-   }
-   else // decrement happened
-   {
-    LCD_OUT(1, 2, difference_txt);
-   }
+   adc_value1 = ADC_Read(0); // get the input from first analog pinout
+   adc_value2 = ADC_Read(1); // get the input from second analog pinout
+   temperature = adc_value1 * (5 / 1024);
+   damp = adc_value2 * (5 / 1024);
+   result = (float) (temperature * damp) / 6; // assume that the formula is (T * D) / 6
+   // conversion
+   FloatToStr(temperature, temperature_txt);
+   FloatToStr(damp, damp_txt);
+   FloatToStr(result, result_txt);
+   // display on LCD (assume the LCD has 6 rows & 16 columns at least)
+    LCD_OUT(1, 1, "Temperature: ");
+    LCD_OUT(2, 14, temperature_txt);
+    LCD_OUT(3, 1, "Damp: ");
+    LCD_OUT(4, 7, damp_txt);
+    LCD_OUT(5, 1, "Result: ");
+    LCD_OUT(6, 9, result_txt);
+   // send the result through the DAC
+   PWM1_Set_Duty(result);
+   PORTA.B2 = result;
   }
  }
 }
@@ -82,15 +87,27 @@ void LCD_config()
  LCD_CMD(_LCD_CURSOR_OFF);
 }
 
+void PWM1_config()
+{
+ TRISC.B2 = 0; // PWM1
+ PR2 = ((1/2000)/(1/8000000*4*4)) - 1; // = 249 | Period Register = ( (1/Frequency as Herz) / (1/Speed as Herz * 4 * Prescaler) ) - 1
+ // set the prescaler 1:4
+ T2CKPS0_BIT = 1;
+ T2CKPS1_BIT = 0;
+ PWM1_Set_Duty(0); // zero has been set as default value
+ PWM1_Start();
+}
+
 void main() {
  setTimer0(); // configuration of Timer0
  ADC_config(); // configuration of ADC
  LCD_config(); // configuration of LCD
+ PWM1_config(); // configuration of PWM1
  // pinout settings
- TRISA.B0 = 1; // 1. pinout of PORTA has been set as input
- PORTA.B0 = 0; // 0 voltage have been sent
- TRISA.B1 = 1; // 2. pinout of PORTA has been set as input
- PORTA.B1 = 0; // 0 voltage have been sent
- // get the initial value of the input
- initial_value = ADC_Read(0); // get it from first pinout
+ TRISA.B0 = 1; // input
+ PORTA.B0 = 0; // reset the voltage
+ TRISA.B1 = 1; // input
+ PORTA.B1 = 0; // reset the voltage
+ TRISA.B2 = 0; // output
+ PORTA.B2 = 0; // reset the voltage
 }
