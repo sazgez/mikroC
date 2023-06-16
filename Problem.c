@@ -50,6 +50,7 @@ void interrupt()
   counter++;
   if(counter == 100) // every 1 second (10 ms * 100 = 1000 ms => 1 s)
   {
+   counter = 0;
    adc_value1 = ADC_Read(0); // get the input from first analog pinout
    adc_value2 = ADC_Read(1); // get the input from second analog pinout
    temperature = adc_value1 * (5 / 1024);
